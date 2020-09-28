@@ -121,7 +121,7 @@ function Planner(props) {
       <Divider/>
       <ListItem button>
             <ListItemIcon><AccountCircleIcon style={{color:'blue'}}/></ListItemIcon>
-            <ListItemText primary={"Juan Diaz Palacios Ramirez"} />
+            <ListItemText primary={localStorage.getItem("name")} />
           </ListItem>
       <Divider />
       <List>

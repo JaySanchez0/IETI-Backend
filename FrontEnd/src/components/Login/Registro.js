@@ -14,18 +14,23 @@ export default function Registro(props){
             setCorrect(false);
             return ;
         }
-        const users = JSON.parse(localStorage.getItem("users"));
-        console.log(users);
-        users.push({email:user,pw:pw});
-        localStorage.setItem("users",JSON.stringify(users));
-        localStorage.setItem("isLogged",true);
-        console.log(users);
-        setUser("");
-        setPW();
+        fetch("https://sheltered-brushlands-95860.herokuapp.com/user",{
+            method:"post",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            mode: 'cors',
+            body:JSON.stringify({email:user,password:pw,name:name})
+        }).then(resp=>resp.text()).then((data)=>{
+            console.log("Data");
+            console.log(data);
+            localStorage.setItem("name",name);
+            localStorage.setItem("isLogged",true);
+            setUser("");
+            setPW("");
+        }).catch(e=>alert("No se pudo registrar el usuario, intenta de nuevo"));
+        console.log({email:user,password:pw,name:name});
 
-    }
-    if(localStorage.getItem("users")==null){
-        localStorage.setItem("users",JSON.stringify([{"email":"jay@mail.com",pw:"test"}]));
     }
     if(localStorage.getItem("isLogged")){
         return <Redirect to="/planer"></Redirect>;

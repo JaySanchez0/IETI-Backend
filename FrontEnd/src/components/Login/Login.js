@@ -8,24 +8,40 @@ function start(user,password,setCorrect){
         setCorrect(false);
         return ;
     }
-    var exist = false;
-    console.log(localStorage.getItem("users"));
-    JSON.parse(localStorage.getItem("users")).forEach((pair)=>exist = exist || (user==pair.email && password==pair.pw));
-    if(exist){
-         localStorage.setItem("isLogged",true);
+    var user = getUser(user,password);
+    console.log(user);
+    if(user!=null){
+        localStorage.setItem("isLogged",true);
+        localStorage.setItem("name",user.name);
+        setCorrect("");
+    }else{
+        setCorrect(false);
     }
-    console.log("Hola");
-    console.log("Hola");
-    setCorrect(false);
+}
+
+function getUser(email,password){
+    var users = JSON.parse(localStorage.getItem("users"));
+    for(var i=0;i<users.length;i++){
+        console.log(users[i]);
+        if(users[i].email === email && users[i].password===password){
+            return users[i];
+        }
+    }
+    return null;
 }
 export default function Login(props){
     const [user,setUser] = useState("");
     const [pw,setPW] = useState("");
     const [reg,setReg] = useState(false);
     const [correct,setCorrect] = useState(true);
-    if(localStorage.getItem("users")==null){
-        localStorage.setItem("users",JSON.stringify([{"email":"jay@mail.com",pw:"test"}]));
-    }
+    React.useEffect(()=>{
+        console.log("Effect");
+        fetch("https://sheltered-brushlands-95860.herokuapp.com/user")
+        .then(response=>response.json()).then((data)=>{
+            console.log(data);
+            localStorage.setItem("users",JSON.stringify(data));
+        }).catch(err=>alert("Error"));
+    },[]);
     if(localStorage.getItem("isLogged")){
         return <Redirect to="/planer"></Redirect>;
     }
