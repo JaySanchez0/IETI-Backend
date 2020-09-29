@@ -45,7 +45,7 @@ public class User {
     public boolean equals(Object ob){
         if(!(ob instanceof User)) return false;
         User u = (User) ob;
-        return u.getEmail().equals(this.email) && u.getPassword().equals(this.password);
+        return u.getEmail().equals(this.email);
     }
 
     @Override

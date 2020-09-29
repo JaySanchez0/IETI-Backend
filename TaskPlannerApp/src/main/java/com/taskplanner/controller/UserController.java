@@ -26,8 +26,11 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<?> addUser(@RequestBody User user){
-        service.create(user);
-        return ResponseEntity.ok().build();
+        User u = service.create(user);
+        if(u!=null)
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.badRequest().build();
     }
 
     @PutMapping
@@ -36,6 +39,7 @@ public class UserController {
         return ResponseEntity.accepted().build();
     }
 
+    @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestBody User user){
         service.remove(user.getEmail());
         return ResponseEntity.ok().build();

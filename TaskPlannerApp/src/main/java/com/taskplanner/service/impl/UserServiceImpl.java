@@ -32,8 +32,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(User user) {
-        users.add(user);
-        return user;
+        if(getById(user.getEmail())==null) {
+            users.add(user);
+            return user;
+        }
+        return null;
     }
 
     @Override
@@ -45,6 +48,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void remove(String userId) {
-
+        users.remove(getById(userId));
     }
 }
