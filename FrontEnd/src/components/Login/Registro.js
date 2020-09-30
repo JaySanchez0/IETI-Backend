@@ -14,7 +14,7 @@ export default function Registro(props){
             setCorrect(false);
             return ;
         }
-        fetch("https://sheltered-brushlands-95860.herokuapp.com/user",{
+        fetch("https://rocky-sands-24100.herokuapp.com/user",{
             method:"post",
             headers:{
                 "Content-Type":"application/json"
@@ -25,6 +25,7 @@ export default function Registro(props){
             console.log("Data");
             console.log(data);
             localStorage.setItem("name",name);
+            localStorage.setItem("email",user);
             localStorage.setItem("isLogged",true);
             setUser("");
             setPW("");

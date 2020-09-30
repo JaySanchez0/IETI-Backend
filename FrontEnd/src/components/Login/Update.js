@@ -21,13 +21,11 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import CloseIcon from '@material-ui/icons/Close';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import CardItem from './Card';
 import DialogContent from '@material-ui/core/DialogContent';
 import Fab from '@material-ui/core/Fab';
 import Dialog from '@material-ui/core/Dialog';
 import AddIcon from '@material-ui/icons/Add';
 import { Zoom } from '@material-ui/core';
-import Modal from './Modal';
 
 const drawerWidth = 240;
 const useStyles2 = makeStyles((theme) => ({
@@ -73,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Planner(props) {
+function Update(props) {
   const { window } = props;
   const classes = useStyles();
   const classes2 = useStyles2();
@@ -82,39 +80,14 @@ function Planner(props) {
   const [closeSesion,setCloseSesion] = React.useState(false);
   const [openModal,setOpenModal] = React.useState(false);
   const [filter,setFilter] = React.useState("Ready");
-  const [nameFilter,setNameFilter] = React.useState("");
-  const [dateFilter,setDateFilter] = React.useState("");
-  const [applyFilter,setApplayFilter] = React.useState(false);
-  const [tasks,setTasks] = React.useState([{
-    "description": "Crear el front end",
-    "responsible": {
-        "name": "Santiago Carrillo",
-        "email": "sancarbar@gmail.com"
-    },
-    "status": "Ready",
-    "dueDate": "2020-05-12"
-},{
-    "description": "Crear Back end",
-    "responsible": {
-        "name": "Santiago Carrillo",
-        "email": "sancarbar@gmail.com"
-    },
-    "status": "Ready",
-    "dueDate": "2020-06-12"
-},{
-    "description": "Corregir Fallos",
-    "responsible": {
-        "name": "Santiago Carrillo",
-        "email": "sancarbar@gmail.com"
-    },
-    "status": "Ready",
-    "dueDate": "2020-07-12"
-    }]);
+  const [pw,setPw] = React.useState("");
+  const [rpw,setRpw]=React.useState("");
+  const [del,setDel] = React.useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
   if(!localStorage.getItem("isLogged")) return <Redirect to="/"/>
-  if(closeSesion) return <Redirect to="/logout"/>;
+  if(closeSesion || del) return <Redirect to="/logout"/>;
   const drawer = (
     <div>
       <div className={classes.toolbar} />
@@ -133,11 +106,7 @@ function Planner(props) {
     </div>
   );
     const container = window !== undefined ? () => window().document.body : undefined;
-    const addTask = (task)=>{
-      tasks.push(task);
-      setTasks(tasks);
-      setOpenModal(false);
-    }
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -190,20 +159,17 @@ function Planner(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
             <div className={classes2.div}>
-              Email: <TextField type="text" value={nameFilter} onChange={(e)=>setNameFilter(e.target.value)}></TextField>
-              Status: <Select value={filter} onChange={(e)=> setFilter(e.target.value)}>
-                <option value="Ready">Ready</option>
-                <option value="In progress">In progress</option>
-                <option value="Done">Done</option>
-              </Select>
-              Date: <TextField type="date" onChange={(e)=>setDateFilter(e.target.value)}></TextField>
-              <Button onClick={(e)=> setApplayFilter(!applyFilter)}>{!applyFilter && "Apply Filter"}{applyFilter && "Disable filters"}</Button>
-              <br></br><br/>
-              {!applyFilter && tasks.map((data)=><CardItem status={data.status}
-                people = {data.responsible.email}
-                description={data.description}
-                date={data.dueDate}/>)}
-                {applyFilter && showFilter(nameFilter,filter,dateFilter,tasks)}
+                    <h1>Cambia aqui tu contraseña</h1>
+                    <TextField label="contraseña" value={pw} onChange={e=>setPw(e.target.value)} type="password"></TextField>
+                    <br></br>
+                    <TextField label="Confirma tu contraseña" value={rpw} onChange={e=>setRpw(e.target.value)} type="password"></TextField>
+                    <br></br><br></br>
+                    <Button onClick={()=>update(pw,rpw)}>Actualizar</Button>
+                    <br></br>
+                    <Button><Link to="/">Volver a taskplanner</Link></Button>
+                    <br></br><br></br>
+                    <Button onClick={()=>deleteUser(setDel)}>Eliminar Cuenta</Button>
+
                 </div>
             <div style={{width:'100%',height:'70px',textAlign:'right'}}>
             <Fab color="secondary" aria-label="add" onClick={()=>setOpenModal(true)}>
@@ -211,29 +177,42 @@ function Planner(props) {
             </Fab>
         </div>
       </main>
-    <Modal open={openModal} close={()=>setOpenModal(false)} addTask={(task)=>addTask(task)}></Modal>
     </div>
   );
 }
 
-Planner.propTypes = {
+function update(password,retry){
+    if(password!=retry){
+        alert("Bad Password");
+        return;
+    }
+    fetch("https://rocky-sands-24100.herokuapp.com/user",{
+        method:"PUT",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email:localStorage.getItem("email"),password:password})
+    }).then(re=>re.text()).then((data)=>{
+        alert("Se actualizo la contraseña");
+    }).catch((e)=>{
+        alert("Se produjo un error, vuelve a intentar");
+    });
+}
+function deleteUser(fun){
+    fetch("https://rocky-sands-24100.herokuapp.com/user",{
+        method:"DELETE",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email:localStorage.getItem("email")})
+    }).then(re=>re.text()).then((data)=>{
+        alert("Se elimino el usuario");
+        fun(true);
+    }).catch((e)=>{
+        alert("Se produjo un error, vuelve a intentar");
+    });
+}
+
+Update.propTypes = {
   window: PropTypes.func,
 };
 
 
-function showFilter(email,status,date,data){
-  var li =[];
-    data.forEach((item)=>{
-      console.log(item);
-      if(item.responsible.email==email || item.responsible.status==status || item.dueDate==date){
-        li.push(<CardItem status={item.status}
-        people = {item.responsible.email}
-        description={item.description}
-        date={item.dueDate}/>);
-      }
-    });
-    return li;
-}
 
-
-export default Planner;
+export default Update;

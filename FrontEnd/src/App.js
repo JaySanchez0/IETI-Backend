@@ -4,6 +4,8 @@ import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import Login from './components/Login/Login';
 import Planner from './components/Planner';
 import Registro from './components/Login/Registro'
+import Update from './components/Login/Update';
+import Users from './components/Users';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           localStorage.setItem("users",users);
           return <Redirect to="/"></Redirect>;
         }} exact />
+        <Route path="/update" component={Update}></Route>
+        <Route path="/user" component={Users}></Route>
     </BrowserRouter>
   );
 }

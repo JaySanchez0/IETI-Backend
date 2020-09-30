@@ -13,6 +13,7 @@ function start(user,password,setCorrect){
     if(user!=null){
         localStorage.setItem("isLogged",true);
         localStorage.setItem("name",user.name);
+        localStorage.setItem("email",user.email);
         setCorrect("");
     }else{
         setCorrect(false);
@@ -36,7 +37,7 @@ export default function Login(props){
     const [correct,setCorrect] = useState(true);
     React.useEffect(()=>{
         console.log("Effect");
-        fetch("https://sheltered-brushlands-95860.herokuapp.com/user")
+        fetch("https://rocky-sands-24100.herokuapp.com/user")
         .then(response=>response.json()).then((data)=>{
             console.log(data);
             localStorage.setItem("users",JSON.stringify(data));
